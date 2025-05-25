@@ -1,6 +1,18 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Password Generator
 
-# Getting Started
+A cross-platform password generator built with React Native that works on macOS, Windows, and Web.
+
+## Features
+
+- Generate secure passwords with customizable options
+- Choose password length (8-32 characters)
+- Include/exclude uppercase letters
+- Include/exclude lowercase letters
+- Include/exclude numbers
+- Include/exclude special characters
+- Copy generated password to clipboard
+- Dark mode support
+- Cross-platform compatibility (macOS, Windows, Web)
 
 > **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
 

@@ -19,8 +19,6 @@ import {
 } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Slider from '@react-native-community/slider';
-import Icon from 'react-native-vector-icons/FontAwesome';
-
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const [password, setPassword] = useState('');
@@ -34,10 +32,18 @@ function App(): React.JSX.Element {
     let charset = '';
     let newPassword = '';
 
-    if (includeUppercase) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    if (includeLowercase) charset += 'abcdefghijklmnopqrstuvwxyz';
-    if (includeNumbers) charset += '0123456789';
-    if (includeSymbols) charset += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+    if (includeUppercase) {
+      charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    }
+    if (includeLowercase) {
+      charset += 'abcdefghijklmnopqrstuvwxyz';
+    }
+    if (includeNumbers) {
+      charset += '0123456789';
+    }
+    if (includeSymbols) {
+      charset += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+    }
 
     if (charset === '') {
       Alert.alert('Error', 'Please select at least one character type');
@@ -122,11 +128,10 @@ function App(): React.JSX.Element {
       />
       <ScrollView>
         <Text style={styles.title}>Password Generator</Text>
-        
-        <View style={styles.passwordContainer}></View>
+        <View style={styles.passwordContainer}>
           <Text style={styles.password}>{password || 'Generate a password'}</Text>
           {password && (
-            <TouchableOpacity onPress={copyToClipboard} style={styles.button}>nshul </TouchableOpacity>
+            <TouchableOpacity onPress={copyToClipboard} style={styles.button}>
               <Text style={styles.buttonText}>Copy to Clipboard</Text>
             </TouchableOpacity>
           )}
@@ -173,7 +178,7 @@ function App(): React.JSX.Element {
           />
         </View>
 
-        <View style={styles.optionContainer}>Yadav </View>
+        <View style={styles.optionContainer}>
           <Text style={styles.optionText}>Special Characters</Text>
           <Switch
             value={includeSymbols}
@@ -190,24 +195,5 @@ function App(): React.JSX.Element {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
