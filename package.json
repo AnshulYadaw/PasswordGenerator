@@ -9,7 +9,12 @@
     "start": "react-native start",
     "test": "jest",
     "web": "webpack serve --mode development --open",
-    "build:web": "webpack --mode production"
+    "build:web": "webpack --mode production",
+    "build": "webpack --mode production",
+    "dev:web": "webpack serve --mode development",
+    "preview": "webpack serve --mode production --open",
+    "deploy": "./deploy.sh",
+    "deploy:vercel": "vercel --prod"
   },
   "dependencies": {
     "@react-native-clipboard/clipboard": "^1.16.2",
