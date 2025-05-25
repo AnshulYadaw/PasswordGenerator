@@ -72,7 +72,7 @@ module.exports = (env, argv) => {
       },
       historyApiFallback: true,
       hot: true,
-      port: 3001,
+      port: 3000,
       open: true,
     },
     optimization: isProduction ? {
