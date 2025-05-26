@@ -5,10 +5,14 @@
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "macos": "node ./scripts/run-macos.js",
+    "windows": "node ./scripts/run-windows.js",
+    "lint": "expo lint",
+    "lint:android": "cd android && ./gradlew lint",
+    "analyze:android": "node ./scripts/analyze-android.js"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
@@ -35,11 +39,13 @@
     "react-dom": "19.0.0",
     "react-native": "0.79.2",
     "react-native-gesture-handler": "~2.24.0",
+    "react-native-macos": "^0.78.3",
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.10.0",
     "react-native-web": "~0.20.0",
-    "react-native-webview": "13.13.5"
+    "react-native-webview": "13.13.5",
+    "react-native-windows": "^0.78.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

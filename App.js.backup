@@ -11,64 +11,6 @@ import {
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 
-// Add a macOS clipboard fallback function
-const copyToClipboardFallback = (text) => {
-  if (Platform.OS === 'macos') {
-    // For macOS, try to use the pasteboard via a terminal command if expo-clipboard fails
-    try {
-      const { execSync } = require('child_process');
-      execSync(`echo "${text}" | pbcopy`);
-      return true;
-    } catch (e) {
-      console.error('MacOS clipboard fallback failed:', e);
-      return false;
-    }
-  }
-  return false;
-};
-
-// Add after the copyToClipboardFallback function
-const calculatePasswordStrength = (pwd) => {
-  if (!pwd) return { score: 0, label: 'None', color: '#ccc' };
-  
-  let score = 0;
-  
-  // Length check
-  if (pwd.length >= 12) score += 3;
-  else if (pwd.length >= 8) score += 2;
-  else if (pwd.length >= 6) score += 1;
-  
-  // Complexity checks
-  if (/[A-Z]/.test(pwd)) score += 1; // Has uppercase
-  if (/[a-z]/.test(pwd)) score += 1; // Has lowercase
-  if (/[0-9]/.test(pwd)) score += 1; // Has numbers
-  if (/[^A-Za-z0-9]/.test(pwd)) score += 2; // Has special chars
-  
-  // Check for repeating characters
-  if (/(.)\1{2,}/.test(pwd)) score -= 1; // Penalize repeating chars
-  
-  // Determine strength label and color
-  let label, color;
-  if (score >= 7) {
-    label = 'Very Strong';
-    color = '#34C759'; // Green
-  } else if (score >= 5) {
-    label = 'Strong';
-    color = '#66BB6A'; // Light green
-  } else if (score >= 3) {
-    label = 'Medium';
-    color = '#FFC107'; // Yellow
-  } else if (score >= 1) {
-    label = 'Weak';
-    color = '#FF9800'; // Orange
-  } else {
-    label = 'Very Weak';
-    color = '#FF5252'; // Red
-  }
-  
-  return { score, label, color };
-};
-
 export default function App() {
   const [password, setPassword] = useState('');
   const [length, setLength] = useState('12');
@@ -95,6 +37,26 @@ export default function App() {
     const passwordLength = parseInt(length) || 12;
 
     for (let i = 0; i < passwordLength; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      newPassword += charset[randomIndex];
+    }
+
+    setPassword(newPassword);
+  };
+
+  const copyToClipboard = async () => {
+    if (password) {
+      await Clipboard.setStringAsync(password);
+      Alert.alert('Success', 'Password copied to clipboard!');
+    }
+  };
+
+  const toggleOption = (option) => {
+    setOptions(prev => ({
+      ...prev,
+      [option]: !prev[option]
+    }));
+  };
 
   return (
     <View style={styles.container}>
@@ -279,4 +241,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-});
+}); 
