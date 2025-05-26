@@ -1,19 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-  Switch,
-  Platform,
-  ScrollView,
-  Dimensions,
-  Animated,
-} from 'react-native';
 import Slider from '@react-native-community/slider';
 import * as Clipboard from 'expo-clipboard';
+import React, { useEffect, useState } from 'react';
+import {
+    Alert,
+    Animated,
+    Dimensions,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Switch,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+    useWindowDimensions,
+} from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -57,7 +58,22 @@ const CHARACTER_TYPES = {
   special: { label: 'Special Characters (!@#$)', icon: '🔣', resistance: 1.2 },
 };
 
+// WebSlider for web platform
+const WebSlider = (props) => (
+  <input
+    type="range"
+    min={props.minimumValue}
+    max={props.maximumValue}
+    value={props.value}
+    onChange={e => props.onValueChange(Number(e.target.value))}
+    style={{ width: '100%', marginLeft: 10, height: 40 }}
+    aria-label="Slider"
+    title="Slider"
+  />
+);
+
 export default function PasswordGeneratorScreen() {
+  const { width: screenWidth } = useWindowDimensions();
   const [password, setPassword] = useState('');
   const [length, setLength] = useState('12');
   const [options, setOptions] = useState({
@@ -275,7 +291,7 @@ export default function PasswordGeneratorScreen() {
     }
   };
 
-  const renderOptionRow = (type) => {
+  const renderOptionRow = (type, key) => {
     const { label, icon, resistance } = CHARACTER_TYPES[type];
     const isLastChanged = lastChangedType === type;
 
@@ -283,7 +299,7 @@ export default function PasswordGeneratorScreen() {
       <View style={[
         styles.optionRow,
         isLastChanged && styles.lastChangedRow
-      ]}>
+      ]} key={key}>
         <View style={styles.optionContent}>
           <View style={styles.optionLabelContainer}>
             <Text style={styles.optionIcon}>{icon}</Text>
@@ -309,15 +325,24 @@ export default function PasswordGeneratorScreen() {
             thumbColor={options[type] ? '#007AFF' : '#f4f3f4'}
           />
           {options[type] && (
-            <Slider
-              style={styles.slider}
-              minimumValue={0}
-              maximumValue={10}
-              value={characterCounts[type]}
-              onValueChange={(value) => updateCharacterCount(type, value)}
-              minimumTrackTintColor="#007AFF"
-              maximumTrackTintColor="#000000"
-            />
+            Platform.OS === 'web' ? (
+              <WebSlider
+                minimumValue={0}
+                maximumValue={10}
+                value={characterCounts[type]}
+                onValueChange={(value) => updateCharacterCount(type, value)}
+              />
+            ) : (
+              <Slider
+                style={styles.slider}
+                minimumValue={0}
+                maximumValue={10}
+                value={characterCounts[type]}
+                onValueChange={(value) => updateCharacterCount(type, value)}
+                minimumTrackTintColor="#007AFF"
+                maximumTrackTintColor="#000000"
+              />
+            )
           )}
         </View>
       </View>
@@ -357,18 +382,103 @@ export default function PasswordGeneratorScreen() {
     }
   }, [characterCounts]);
 
+  // Responsive styles
+  const isMobile = screenWidth < 500;
+  const dynamicStyles = StyleSheet.create({
+    content: {
+      flex: 1,
+      padding: isMobile ? 10 : 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+      maxWidth: 600,
+      width: '100%',
+      alignSelf: 'center',
+      paddingTop: Platform.OS === 'web' ? (isMobile ? 10 : 20) : 0,
+    },
+    title: {
+      fontSize: isMobile ? 24 : 32,
+      fontWeight: 'bold',
+      color: '#333',
+      marginBottom: 8,
+      textAlign: 'center',
+    },
+    subtitle: {
+      fontSize: isMobile ? 14 : 16,
+      color: '#666',
+      textAlign: 'center',
+    },
+    inputContainer: {
+      flexDirection: isMobile ? 'column' : 'row',
+      alignItems: isMobile ? 'flex-start' : 'center',
+      marginBottom: 20,
+      backgroundColor: '#fff',
+      padding: isMobile ? 10 : 15,
+      borderRadius: 10,
+      width: '100%',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 3.84,
+      elevation: 5,
+    },
+    label: {
+      fontSize: isMobile ? 14 : 16,
+      marginRight: isMobile ? 0 : 10,
+      marginBottom: isMobile ? 8 : 0,
+      color: '#333',
+      fontWeight: '600',
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: '#ddd',
+      borderRadius: 8,
+      padding: isMobile ? 8 : 10,
+      width: isMobile ? '100%' : 60,
+      textAlign: 'center',
+      backgroundColor: '#fff',
+      fontSize: isMobile ? 14 : 16,
+    },
+    generateButton: {
+      backgroundColor: '#007AFF',
+      paddingHorizontal: isMobile ? 20 : 30,
+      paddingVertical: isMobile ? 12 : 15,
+      borderRadius: 10,
+      marginBottom: 20,
+      width: '100%',
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+    },
+    buttonText: {
+      color: '#fff',
+      fontSize: isMobile ? 16 : 18,
+      fontWeight: '600',
+    },
+    passwordText: {
+      fontSize: isMobile ? 16 : 20,
+      marginBottom: 15,
+      color: '#333',
+      textAlign: 'center',
+      fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    },
+    // ...add more overrides as needed...
+  });
+
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.content}>
+      <View style={dynamicStyles.content}>
         <View style={styles.header}>
-          <Text style={styles.title}>Password Generator</Text>
-          <Text style={styles.subtitle}>Create strong, secure passwords</Text>
+          <Text style={dynamicStyles.title}>Password Generator</Text>
+          <Text style={dynamicStyles.subtitle}>Create strong, secure passwords</Text>
         </View>
         
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Password Length:</Text>
+        <View style={dynamicStyles.inputContainer}>
+          <Text style={dynamicStyles.label}>Password Length:</Text>
           <TextInput
-            style={styles.input}
+            style={dynamicStyles.input}
             value={length}
             onChangeText={handleLengthChange}
             keyboardType="numeric"
@@ -377,7 +487,7 @@ export default function PasswordGeneratorScreen() {
         </View>
 
         <View style={styles.optionsContainer}>
-          {Object.keys(CHARACTER_TYPES).map(type => renderOptionRow(type))}
+          {Object.keys(CHARACTER_TYPES).map(type => renderOptionRow(type, type))}
 
           <View style={styles.autoOptionsContainer}>
             <View style={styles.autoOption}>
@@ -401,13 +511,13 @@ export default function PasswordGeneratorScreen() {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.generateButton} onPress={generatePassword}>
-          <Text style={styles.buttonText}>Generate Password</Text>
+        <TouchableOpacity style={dynamicStyles.generateButton} onPress={generatePassword}>
+          <Text style={dynamicStyles.buttonText}>Generate Password</Text>
         </TouchableOpacity>
 
         {password ? (
           <View style={styles.passwordContainer}>
-            <Text style={styles.passwordText}>{password}</Text>
+            <Text style={dynamicStyles.passwordText}>{password}</Text>
             {renderStrengthIndicator()}
             <TouchableOpacity style={styles.copyButton} onPress={copyToClipboard}>
               <Text style={styles.copyButtonText}>Copy</Text>
@@ -424,62 +534,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
-  content: {
-    flex: 1,
-    padding: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    maxWidth: 600,
-    width: '100%',
-    alignSelf: 'center',
-    paddingTop: Platform.OS === 'web' ? 20 : 0,
-  },
   header: {
     alignItems: 'center',
     marginBottom: 30,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-    backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 10,
-    width: '100%',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  label: {
-    fontSize: 16,
-    marginRight: 10,
-    color: '#333',
-    fontWeight: '600',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 10,
-    width: 60,
-    textAlign: 'center',
-    backgroundColor: '#fff',
-    fontSize: 16,
   },
   optionsContainer: {
     width: '100%',
@@ -553,28 +610,6 @@ const styles = StyleSheet.create({
     color: '#333',
     fontWeight: '500',
   },
-  generateButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 10,
-    marginBottom: 20,
-    width: '100%',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
   passwordContainer: {
     backgroundColor: '#fff',
     padding: 20,
@@ -589,13 +624,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3.84,
     elevation: 5,
-  },
-  passwordText: {
-    fontSize: 20,
-    marginBottom: 15,
-    color: '#333',
-    textAlign: 'center',
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
   },
   copyButton: {
     backgroundColor: '#34C759',
